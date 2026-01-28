@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Animated, PanResponder, Easing } from 'react-native';
+import { Platform } from 'react-native';
 import BottomNav from '@/components/BottomNav';
 import ProfileCard, { type Profile } from '@/components/ProfileCard';
 import { type AssetTag as AssetTagLabel } from '@/components/AssetTag';
@@ -86,25 +87,87 @@ export default function MatchedPage() {
 	const [index, setIndex] = React.useState(0);
 	const current = MATCHES[index];
 
-	const next = () => setIndex((i) => (i + 1) % MATCHES.length);
-	const prev = () => setIndex((i) => (i - 1 + MATCHES.length) % MATCHES.length);
+	// Animated values for smooth transitions
+	const translateX = React.useRef(new Animated.Value(0)).current;
+	const opacity = React.useRef(new Animated.Value(1)).current;
+
+	const animateToCenter = () => {
+		Animated.parallel([
+			Animated.spring(translateX, { toValue: 0, useNativeDriver: true }),
+			Animated.timing(opacity, { toValue: 1, duration: 150, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+		]).start();
+	};
+
+	const changeIndex = (dir: 1 | -1) => {
+		// animate out in the direction
+		Animated.parallel([
+			Animated.timing(translateX, { toValue: dir * -60, duration: 150, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+			Animated.timing(opacity, { toValue: 0, duration: 150, easing: Easing.in(Easing.quad), useNativeDriver: true }),
+		]).start(() => {
+			setIndex((i) => (i + dir + MATCHES.length) % MATCHES.length);
+			translateX.setValue(dir * 60);
+			opacity.setValue(0);
+			Animated.parallel([
+				Animated.timing(translateX, { toValue: 0, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+				Animated.timing(opacity, { toValue: 1, duration: 180, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+			]).start();
+		});
+	};
+
+	// PanResponder for swipe gestures
+	const panResponder = React.useRef(
+		PanResponder.create({
+			onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dx) > 12,
+			onPanResponderMove: (_, gesture) => {
+				translateX.setValue(gesture.dx);
+				opacity.setValue(Math.max(0.6, 1 - Math.abs(gesture.dx) / 300));
+			},
+			onPanResponderRelease: (_, gesture) => {
+				if (gesture.dx > 80) {
+					changeIndex(-1); // swipe right -> previous
+				} else if (gesture.dx < -80) {
+					changeIndex(1); // swipe left -> next
+				} else {
+					animateToCenter();
+				}
+			},
+		})
+	).current;
+
+	const next = () => changeIndex(1);
+	const prev = () => changeIndex(-1);
 
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>Matches ({index + 1}/{MATCHES.length})</Text>
 
-			{/* Full-width profile card */}
+			{/* Full-width profile card with swipe */}
 			<View style={styles.cardContainer}>
-				<ProfileCard profile={current} />
+				<Animated.View
+					style={{ transform: [{ translateX }], opacity, width: '100%', maxWidth: 720 }}
+					{...panResponder.panHandlers}
+				>
+					<ProfileCard profile={current} />
+				</Animated.View>
+				{Platform.OS === 'web' && (
+					<>
+						<TouchableOpacity style={styles.miniArrowLeft} onPress={prev} aria-label="Previous">
+							<Text style={styles.miniArrowText}>‹</Text>
+						</TouchableOpacity>
+						<TouchableOpacity style={styles.miniArrowRight} onPress={next} aria-label="Next">
+							<Text style={styles.miniArrowText}>›</Text>
+						</TouchableOpacity>
+					</>
+				)}
 			</View>
 
-			{/* Navigation controls */}
+			{/* Navigation controls with arrows */}
 			<View style={styles.controls}>
 				<TouchableOpacity style={[styles.navBtn, styles.navLeft]} onPress={prev} accessibilityRole="button">
-					<Text style={styles.navText}>Prev</Text>
+					<Text style={styles.navText}>← Prev</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={[styles.navBtn, styles.navRight]} onPress={next} accessibilityRole="button">
-					<Text style={styles.navText}>Next</Text>
+					<Text style={styles.navText}>Next →</Text>
 				</TouchableOpacity>
 			</View>
 
@@ -116,15 +179,13 @@ export default function MatchedPage() {
 const styles = StyleSheet.create({
 	container: { flex: 1, backgroundColor: '#fff' },
 	title: { fontSize: 20, fontWeight: '600', marginHorizontal: 16, marginTop: 12, marginBottom: 8 },
-	cardContainer: { flex: 1, justifyContent: 'center' },
+	cardContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', position: 'relative', paddingHorizontal: 24 },
 	controls: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		paddingHorizontal: 16,
 		paddingVertical: 12,
 	},
-	
-	
 	navBtn: {
 		backgroundColor: '#f2f2f2',
 		paddingHorizontal: 16,
@@ -136,4 +197,41 @@ const styles = StyleSheet.create({
 	navLeft: {},
 	navRight: {},
 	navText: { fontSize: 14, fontWeight: '600', color: '#333' },
+	miniArrowText: { fontSize: 12, color: '#333', fontWeight: '700' },
+	miniArrowLeft: {
+		position: 'absolute',
+		left: 8,
+		top: '50%',
+		marginTop: -10,
+		backgroundColor: 'rgba(255,255,255,0.9)',
+		borderColor: '#ddd',
+		borderWidth: StyleSheet.hairlineWidth,
+		borderRadius: 12,
+		paddingHorizontal: 6,
+		paddingVertical: 4,
+		zIndex: 100,
+		shadowColor: '#000',
+		shadowOpacity: 0.15,
+		shadowOffset: { width: 0, height: 1 },
+		shadowRadius: 2,
+		elevation: 1,
+	},
+	miniArrowRight: {
+		position: 'absolute',
+		right: 8,
+		top: '50%',
+		marginTop: -10,
+		backgroundColor: 'rgba(255,255,255,0.9)',
+		borderColor: '#ddd',
+		borderWidth: StyleSheet.hairlineWidth,
+		borderRadius: 12,
+		paddingHorizontal: 6,
+		paddingVertical: 4,
+		zIndex: 100,
+		shadowColor: '#000',
+		shadowOpacity: 0.15,
+		shadowOffset: { width: 0, height: 1 },
+		shadowRadius: 2,
+		elevation: 1,
+	},
 });

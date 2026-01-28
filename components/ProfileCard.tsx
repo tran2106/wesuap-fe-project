@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import AssetTag, { type AssetTag as AssetTagLabel } from '@/components/AssetTag';
 import AssetCard, { type Asset } from '@/components/AssetCard';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,9 +26,17 @@ type Props = {
 };
 
 export default function ProfileCard({ profile }: Props) {
+  const { height } = Dimensions.get('window');
+  const maxAssetHeight = Math.max(200, height * 0.35); // responsive based on screen height
+
   return (
     <View style={styles.cardWrapper}>
-      <View style={styles.screen}>
+      <ScrollView 
+        style={styles.screen}
+        contentContainerStyle={styles.screenContent}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+      >
         {/* Top: Centered avatar */}
         <View style={styles.avatarSection}>
           <Image source={{ uri: profile.avatarUrl }} style={styles.avatarLarge} />
@@ -74,7 +82,12 @@ export default function ProfileCard({ profile }: Props) {
 
         {/* Render assets as cards */}
         {profile.assets?.length ? (
-          <ScrollView style={styles.assetsScroll} contentContainerStyle={styles.assetsContent}>
+          <ScrollView 
+            style={[styles.assetsScroll, { maxHeight: maxAssetHeight }]} 
+            contentContainerStyle={styles.assetsContent}
+            nestedScrollEnabled={true}
+            showsVerticalScrollIndicator={true}
+          >
             {profile.assets.map((a) => (
               <AssetCard key={a.id} asset={a} />
             ))}
@@ -87,7 +100,7 @@ export default function ProfileCard({ profile }: Props) {
             <Text style={styles.offerButtonText}>Send Offer</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -95,8 +108,9 @@ export default function ProfileCard({ profile }: Props) {
 const styles = StyleSheet.create({
   cardWrapper: {
     alignSelf: 'center',
-    width: '92%',
-    maxWidth: 480, // allow slightly larger on tablets
+    width: '100%',
+    maxWidth: 520,
+    height: '100%', // fill available space
     backgroundColor: '#fff',
     borderRadius: 16,
     borderWidth: StyleSheet.hairlineWidth,
@@ -106,13 +120,16 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 3,
+    overflow: 'hidden',
   },
   screen: {
     flex: 1,
+  },
+  screenContent: {
     paddingHorizontal: 16,
     paddingTop: 24,
-    paddingBottom: 16,
-    rowGap: 12, // responsive spacing between children
+    paddingBottom: 24,
+    flexGrow: 1,
   },
   avatarSection: {
     alignItems: 'center',
@@ -134,23 +151,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     color: '#666',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   bioCenter: {
     textAlign: 'center',
     fontSize: 14,
     color: '#333',
     marginHorizontal: 8,
+    lineHeight: 20,
   },
   socials: {
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 12,
-    marginTop: 10,
+    marginTop: 12,
+    marginBottom: 8,
   },
   iconBtn: { padding: 6 },
   assetsScroll: {
-    maxHeight: 300,
     marginTop: 12,
     marginBottom: 12,
   },
@@ -158,12 +176,12 @@ const styles = StyleSheet.create({
     paddingBottom: 6,
   },
   footer: {
-    paddingVertical: 8,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   offerButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
     backgroundColor: '#ff7a00',
     borderRadius: 10,
   },
