@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
-export type Skill =
+export type AssetTag =
   | 'Affiliated Marketing'
   | 'Art'
   | 'Art & Design'
@@ -142,7 +142,7 @@ const COLOR_MAP: Record<string, { bg: string; fg: string; border: string }> = {
   Yoga: { bg: '#E8F5E9', fg: '#1B5E20', border: '#A5D6A7' },
 };
 
-export default function SkillsTag({ label }: { label: Skill }) {
+export default function AssetTag({ label }: { label: AssetTag }) {
   const colors = COLOR_MAP[label] ?? { bg: '#ECEFF1', fg: '#37474F', border: '#CFD8DC' };
   return (
     <View
