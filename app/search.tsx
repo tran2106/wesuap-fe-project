@@ -145,7 +145,7 @@ export function SearchContent() {
 			{/* Full-width profile card */}
 			<View style={styles.cardContainer}>
 				<Animated.View
-					style={{ transform: [{ translateX }], opacity, width: '100%', maxWidth: 720 }}
+					style={{ transform: [{ translateX }], opacity, width: '100%', maxWidth: 720, flex: 1 }}
 					{...panResponder.panHandlers}
 				>
 					<ProfileCard profile={current} />
@@ -267,8 +267,8 @@ const styles = StyleSheet.create({
 		justifyContent: 'center', 
 		alignItems: 'center', 
 		position: 'relative', 
-		paddingHorizontal: 24,
-		paddingVertical: 16,
+		paddingHorizontal: 16,
+		paddingVertical: 12,
 	},
 	controls: {
 		flexDirection: 'row',

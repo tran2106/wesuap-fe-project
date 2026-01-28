@@ -144,7 +144,7 @@ export default function MatchedPage() {
 			{/* Full-width profile card with swipe */}
 			<View style={styles.cardContainer}>
 				<Animated.View
-					style={{ transform: [{ translateX }], opacity, width: '100%', maxWidth: 720 }}
+					style={{ transform: [{ translateX }], opacity, width: '100%', maxWidth: 720, flex: 1 }}
 					{...panResponder.panHandlers}
 				>
 					<ProfileCard profile={current} />
@@ -179,7 +179,7 @@ export default function MatchedPage() {
 const styles = StyleSheet.create({
 	container: { flex: 1, backgroundColor: '#fff' },
 	title: { fontSize: 20, fontWeight: '600', marginHorizontal: 16, marginTop: 12, marginBottom: 8 },
-	cardContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', position: 'relative', paddingHorizontal: 24 },
+	cardContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', position: 'relative', paddingHorizontal: 16, paddingVertical: 12 },
 	controls: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',

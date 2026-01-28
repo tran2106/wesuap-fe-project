@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Platform, Animated } from 'react-native';
 import AssetTag, { type AssetTag as AssetTagLabel } from '@/components/AssetTag';
 import AssetCard, { type Asset } from '@/components/AssetCard';
 import { Ionicons } from '@expo/vector-icons';
+import OfferForm from '@/components/OfferForm';
 
 export type Profile = {
   id: string;
@@ -10,8 +11,8 @@ export type Profile = {
   location: string;
   bio: string;
   avatarUrl: string;
-  skills?: AssetTagLabel[]; // asset/skill tags
-  assets?: Asset[]; // assets this profile can teach
+  skills?: AssetTagLabel[];
+  assets?: Asset[];
   socials?: Partial<{
     twitter: string;
     instagram: string;
@@ -26,30 +27,43 @@ type Props = {
 };
 
 export default function ProfileCard({ profile }: Props) {
-  const { height } = Dimensions.get('window');
-  const maxAssetHeight = Math.max(200, height * 0.35); // responsive based on screen height
+  const { height, width } = Dimensions.get('window');
+  const isMobile = width < 768;
+  const isWeb = Platform.OS === 'web';
+  const [showOfferForm, setShowOfferForm] = useState(false);
+  const [offerSent, setOfferSent] = useState(false);
+  const buttonOpacity = React.useRef(new Animated.Value(1)).current;
+  
+  const cardHeight = isWeb ? Math.min(height * 0.8, 700) : undefined;
+
+  const handleOfferSubmitted = () => {
+    setOfferSent(true);
+    setShowOfferForm(false);
+    // Fade out button
+    Animated.timing(buttonOpacity, {
+      toValue: 0,
+      duration: 1500,
+      delay: 500,
+      useNativeDriver: true,
+    }).start();
+  };
 
   return (
-    <View style={styles.cardWrapper}>
+    <View style={[styles.cardWrapper, cardHeight ? { height: cardHeight } : { flex: 1 }]}>
       <ScrollView 
         style={styles.screen}
         contentContainerStyle={styles.screenContent}
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
-        {/* Top: Centered avatar */}
         <View style={styles.avatarSection}>
           <Image source={{ uri: profile.avatarUrl }} style={styles.avatarLarge} />
           <Text style={styles.nameLarge}>{profile.displayName}</Text>
         </View>
 
-        {/* Location */}
         <Text style={styles.locationCenter}>{profile.location}</Text>
-
-        {/* Bio */}
         <Text style={styles.bioCenter}>{profile.bio}</Text>
 
-        {/* Social icons under bio */}
         {profile.socials ? (
           <View style={styles.socials}>
             {profile.socials.twitter ? (
@@ -80,27 +94,42 @@ export default function ProfileCard({ profile }: Props) {
           </View>
         ) : null}
 
-        {/* Render assets as cards */}
         {profile.assets?.length ? (
-          <ScrollView 
-            style={[styles.assetsScroll, { maxHeight: maxAssetHeight }]} 
-            contentContainerStyle={styles.assetsContent}
-            nestedScrollEnabled={true}
-            showsVerticalScrollIndicator={true}
-          >
+          <View style={styles.assetsSection}>
             {profile.assets.map((a) => (
               <AssetCard key={a.id} asset={a} />
             ))}
-          </ScrollView>
+          </View>
         ) : null}
-
-        {/* Bottom: Send Offer button */}
-        <View style={styles.footer}>
-          <TouchableOpacity style={styles.offerButton} accessibilityRole="button">
-            <Text style={styles.offerButtonText}>Send Offer</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
+
+      <View style={styles.footer}>
+        <Animated.View style={{ opacity: buttonOpacity, width: '100%' }}>
+          <TouchableOpacity 
+            style={[styles.offerButton, offerSent && styles.offerButtonSent]} 
+            accessibilityRole="button"
+            onPress={() => !offerSent && setShowOfferForm(true)}
+            disabled={offerSent}
+          >
+            {offerSent ? (
+              <View style={styles.sentContainer}>
+                <Ionicons name="checkmark-circle" size={20} color="#fff" />
+                <Text style={styles.offerButtonText}>Offer Sent</Text>
+              </View>
+            ) : (
+              <Text style={styles.offerButtonText}>Send Offer</Text>
+            )}
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
+
+      {/* Offer Form Modal */}
+      <OfferForm
+        visible={showOfferForm}
+        onClose={() => setShowOfferForm(false)}
+        onSubmitSuccess={handleOfferSubmitted}
+        recipientName={profile.displayName}
+      />
     </View>
   );
 }
@@ -110,7 +139,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: '100%',
     maxWidth: 520,
-    height: '100%', // fill available space
     backgroundColor: '#fff',
     borderRadius: 16,
     borderWidth: StyleSheet.hairlineWidth,
@@ -128,8 +156,7 @@ const styles = StyleSheet.create({
   screenContent: {
     paddingHorizontal: 16,
     paddingTop: 24,
-    paddingBottom: 24,
-    flexGrow: 1,
+    paddingBottom: 80,
   },
   avatarSection: {
     alignItems: 'center',
@@ -167,23 +194,45 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 8,
   },
-  iconBtn: { padding: 6 },
-  assetsScroll: {
-    marginTop: 12,
-    marginBottom: 12,
+  iconBtn: { 
+    padding: 6 
   },
-  assetsContent: {
-    paddingBottom: 6,
+  assetsSection: {
+    marginTop: 12,
+    marginBottom: 16,
   },
   footer: {
-    paddingVertical: 12,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingTop: 16,
+    paddingBottom: 16,
+    paddingHorizontal: 16,
     alignItems: 'center',
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: -2 },
+    elevation: 4,
   },
   offerButton: {
     paddingHorizontal: 24,
     paddingVertical: 12,
     backgroundColor: '#ff7a00',
     borderRadius: 10,
+  },
+  offerButtonSent: {
+    backgroundColor: '#34C759',
+  },
+  sentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
   },
   offerButtonText: {
     color: '#fff',

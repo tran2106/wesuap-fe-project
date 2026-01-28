@@ -495,3 +495,252 @@
 - Loading screen no longer shows arrows prematurely
 - Cleaner mobile UX without overlapping navigation controls
 
+-------------------------------------------------------
+## 2025-01-28 - Fixed ProfileCard Size on Mobile
+
+**Issue:**
+- ProfileCard was not displaying properly on mobile devices
+- Card height was using `height: '100%'` which didn't work well with flex layout
+- Padding was too large on mobile, reducing available card space
+- Assets section height wasn't optimized for smaller mobile screens
+
+**Solution:**
+1. **Flex Layout:** Changed `cardWrapper` from `height: '100%'` to `flex: 1` for proper flex behavior
+2. **Animated Wrapper:** Added `flex: 1` to the Animated.View wrapper to ensure proper height distribution
+3. **Mobile Detection:** Added mobile detection based on screen width (`< 768px`)
+4. **Responsive Asset Height:** Reduced maxAssetHeight on mobile from 35% to 25% of screen height
+5. **Padding Optimization:** Reduced horizontal padding from 24px to 16px and added consistent vertical padding
+
+**Changes:**
+
+**`components/ProfileCard.tsx`:**
+```tsx
+export default function ProfileCard({ profile }: Props) {
+  const { height, width } = Dimensions.get('window');
+  const isMobile = width < 768;
+  const isWeb = Platform.OS === 'web';
+  const maxAssetHeight = isMobile ? Math.max(140, height * 0.2) : Math.max(200, height * 0.35);
+  
+  // On web, constrain the card height to avoid it being too tall
+  const cardHeight = isWeb ? Math.min(height * 0.8, 700) : undefined;
+
+  return (
+    <View style={[styles.cardWrapper, cardHeight ? { height: cardHeight } : { flex: 1 }]}>
+      {/* ... */}
+    </View>
+  );
+}
+
+// Removed flex: 1 from base cardWrapper style
+cardWrapper: {
+  // flex: 1 removed - now applied conditionally
+  width: '100%',
+  maxWidth: 520,
+  // ...other styles
+}
+```
+
+**`app/search.tsx` and `app/matched.tsx`:**
+```tsx
+// Added flex: 1 to Animated wrapper
+<Animated.View
+  style={{ transform: [{ translateX }], opacity, width: '100%', maxWidth: 720, flex: 1 }}
+  {...panResponder.panHandlers}
+>
+  <ProfileCard profile={current} />
+</Animated.View>
+
+// Reduced padding in cardContainer
+cardContainer: { 
+  paddingHorizontal: 16,  // Reduced from 24
+  paddingVertical: 12,
+}
+```
+
+**Result:**
+- ProfileCard now properly fills available space on mobile
+- Better utilization of screen real estate on smaller devices
+- Consistent card sizing across different mobile screen sizes
+- Improved scrolling behavior for assets section
+- Card remains responsive and properly sized on all devices
+
+-------------------------------------------------------
+## 2025-01-28 - Fixed ProfileCard Size on Web
+
+**Issue:**
+- ProfileCard was not displaying correctly on web browsers
+- Card was stretching too tall or not maintaining proper proportions
+- `flex: 1` caused the card to fill entire container height on web, making it too large
+
+**Solution:**
+1. **Platform-Specific Height:** Added conditional height constraint for web platform
+2. **Dynamic Sizing:** Card height on web is now `Math.min(height * 0.8, 700)` - max 80% of viewport or 700px
+3. **Flex for Mobile:** Mobile devices still use `flex: 1` for proper space filling
+4. **Removed Default Flex:** Removed `flex: 1` from base cardWrapper style to allow platform-specific control
+
+**Changes in `components/ProfileCard.tsx`:**
+```tsx
+export default function ProfileCard({ profile }: Props) {
+  const { height, width } = Dimensions.get('window');
+  const isMobile = width < 768;
+  const isWeb = Platform.OS === 'web';
+  const maxAssetHeight = isMobile ? Math.max(140, height * 0.2) : Math.max(200, height * 0.35);
+  
+  // On web, constrain the card height to avoid it being too tall
+  const cardHeight = isWeb ? Math.min(height * 0.8, 700) : undefined;
+
+  return (
+    <View style={[styles.cardWrapper, cardHeight ? { height: cardHeight } : { flex: 1 }]}>
+      {/* ... */}
+    </View>
+  );
+}
+
+// Removed flex: 1 from base cardWrapper style
+cardWrapper: {
+  // flex: 1 removed - now applied conditionally
+  width: '100%',
+  maxWidth: 520,
+  // ...other styles
+}
+```
+
+**Result:**
+- ProfileCard now displays with proper size on web (max 700px or 80% of viewport height)
+- Mobile continues to use flex layout for full space utilization
+- Consistent, predictable card sizing across all platforms
+- Card maintains good proportions and doesn't stretch excessively on large screens
+
+-------------------------------------------------------
+# Prompt Log Entry - Fixed "Send Offer" Button at Bottom with Scrollable Assets
+
+## Goal
+- Document and fix the "Send Offer" button overlapping issue on mobile devices.
+
+## Prompt
+- "document in prompt log, fix send offer button overlapping assets on mobile"
+
+## Result
+- Increased spacing and adjusted layout in `components/ProfileCard.tsx` to prevent the "Send Offer" button from overlapping with the assets section on mobile devices.
+
+## Edits / Verification
+- Modified styles for `assetsScroll`, `assetsContent`, and `footer` in `ProfileCard.tsx`.
+- Verified on mobile that the button no longer overlaps assets and has proper spacing.
+
+-------------------------------------------------------
+## 2025-01-28 - Limited Assets Section to Show Max 3 Asset Cards
+
+**Issue:**
+- User wanted to limit the assets section to show a maximum of 3 asset cards on screen
+- Previous implementation used percentage-based heights which varied too much
+- Need consistent, predictable height that fits exactly 3 asset cards
+
+**Solution:**
+Changed from dynamic percentage-based height to a **fixed height of 370px** for the assets ScrollView.
+
+**Calculation:**
+- Each AssetCard is approximately 120px tall (including margins and padding)
+- 3 cards × 120px = ~360px
+- Set to 370px to account for slight variations and ensure comfortable fit
+
+**Changes in `components/ProfileCard.tsx`:**
+```tsx
+// Before:
+const maxAssetHeight = isMobile ? Math.max(140, height * 0.2) : Math.max(200, height * 0.35);
+
+// After:
+const maxAssetHeight = 370; // 3 cards * ~120px each = ~360-370px
+```
+
+**Result:**
+- ✅ Assets section now shows exactly ~3 asset cards at a time
+- ✅ Consistent height across all devices (mobile and web)
+- ✅ Users can scroll to see additional assets if there are more than 3
+- ✅ Fixed height prevents layout shifts and button overlap
+- ✅ Predictable, stable layout on all screen sizes
+
+-------------------------------------------------------
+# Prompt Log Entry - Create Offer Form Modal with Validation
+
+## Goal
+- Build a comprehensive form modal for sending offers to matched profiles, with validation, loading states, and success feedback.
+
+## Prompt
+- "create a form modal for sending offers to matched profiles, with validation, loading states, and success feedback"
+
+## Result
+- Implemented `OfferForm` modal component with fields: 
+  - **What I Offer** (Required, 200-300 chars)
+  - **What I Want** (Required, 200-300 chars)
+  - **Optional Note** (Optional, 200 chars)
+- Real-time validation, character counter, and error/success styling.
+- Integrated into `ProfileCard` to show/hide on "Send Offer" button click.
+
+## Edits / Verification
+- Created `components/OfferForm.tsx` with form logic, validation, and animated success feedback.
+- Integrated `OfferForm` in `ProfileCard` and managed open/close state.
+- Verified form validation, submission flow, and success animation.
+
+## Details
+- **Validation Rules:**
+  - Required fields ("What I Offer", "What I Want") must be 200-300 characters.
+  - Real-time feedback: Red when invalid, Green when valid.
+  - Submit button is disabled until form is valid.
+
+- **User Flow:**
+  1. Open modal by clicking "Send Offer" on `ProfileCard`.
+  2. Fill form fields, see real-time validation.
+  3. Submit form, shows loading spinner.
+  4. On success, shows animated checkmark and success message, then closes.
+
+- **Styling:**
+  - Modal slides up from bottom, with a semi-transparent overlay.
+  - Rounded top corners, takes up to 90% of screen height.
+  - Clear visual hierarchy for form fields, error/success states.
+
+- **Files Modified:**
+  - ✅ Created `components/OfferForm.tsx` (form modal component)
+  - ✅ Updated `components/ProfileCard.tsx` (integrated modal)
+  - ✅ Documented in `PROMPT_LOG.md`
+
+-------------------------------------------------------
+## 2025-01-28 - Updated Offer Form Minimum Character Requirement
+
+**Change:**
+Reduced the minimum character requirement for form fields from 200 to 50 characters to make the form more user-friendly and accessible.
+
+**Updated Validation:**
+- **Previous:** 200-300 characters required
+- **New:** 50-300 characters required
+
+**Changes in `components/OfferForm.tsx`:**
+```tsx
+// Updated constant
+const MIN_CHARS = 50;  // Changed from 200
+
+// Updated placeholders
+"Describe what you can offer in exchange (50-300 characters)"
+"Describe what you're looking for (50-300 characters)"
+
+// Updated validation message
+"Please ensure both required fields have 50-300 characters"
+```
+
+**Affected Fields:**
+- ✅ "What I Offer" field - now requires 50-300 characters
+- ✅ "What I Want" field - now requires 50-300 characters
+- ✅ Character counters updated to show new minimum
+- ✅ Validation messages updated
+
+**Benefits:**
+- ⚡ **Faster to complete** - Lower barrier to entry
+- 📝 **More flexible** - Users can be concise or detailed
+- 🎯 **Better UX** - Less intimidating for users
+- ✅ **Still validated** - Prevents empty or excessively long submissions
+
+**Validation Logic Remains:**
+- Required fields cannot be empty
+- Maximum 300 characters enforced
+- Submit button disabled until valid
+- Real-time visual feedback (red < 50, green 50-300, red > 300)
+
