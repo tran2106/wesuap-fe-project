@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import BottomNav from '@/components/BottomNav';
 import ProfileCard, { type Profile } from '@/components/ProfileCard';
 import { type Skill } from '@/components/SkillsTag';
+import React from 'react';
 
-const MOCK_PROFILES: Profile[] = [
+const MATCHES: Profile[] = [
 	{
 		id: '1',
 		displayName: 'Alex Johnson',
@@ -31,14 +32,31 @@ const MOCK_PROFILES: Profile[] = [
 ];
 
 export default function SearchPage() {
+	const [index, setIndex] = React.useState(0);
+	const current = MATCHES[index];
+
+	const next = () => setIndex((i) => (i + 1) % MATCHES.length);
+	const prev = () => setIndex((i) => (i - 1 + MATCHES.length) % MATCHES.length);
+
 	return (
 		<View style={styles.container}>
-			<ScrollView contentContainerStyle={styles.scrollContent}>
-				<Text style={styles.title}>Search</Text>
-				{MOCK_PROFILES.map((p) => (
-					<ProfileCard key={p.id} profile={p} />
-				))}
-			</ScrollView>
+			<Text style={styles.title}>Matches ({index + 1}/{MATCHES.length})</Text>
+
+			{/* Full-width profile card */}
+			<View style={styles.cardContainer}>
+				<ProfileCard profile={current} />
+			</View>
+
+			{/* Navigation controls */}
+			<View style={styles.controls}>
+				<TouchableOpacity style={[styles.navBtn, styles.navLeft]} onPress={prev} accessibilityRole="button">
+					<Text style={styles.navText}>Prev</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style={[styles.navBtn, styles.navRight]} onPress={next} accessibilityRole="button">
+					<Text style={styles.navText}>Next</Text>
+				</TouchableOpacity>
+			</View>
+
 			<BottomNav />
 		</View>
 	);
@@ -46,6 +64,23 @@ export default function SearchPage() {
 
 const styles = StyleSheet.create({
 	container: { flex: 1, backgroundColor: '#fff' },
-	scrollContent: { paddingBottom: 96 },
-	title: { fontSize: 24, fontWeight: '600', margin: 16 },
+	title: { fontSize: 20, fontWeight: '600', marginHorizontal: 16, marginTop: 12, marginBottom: 8 },
+	cardContainer: { flex: 1, justifyContent: 'center' },
+	controls: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		paddingHorizontal: 16,
+		paddingVertical: 12,
+	},
+	navBtn: {
+		backgroundColor: '#f2f2f2',
+		paddingHorizontal: 16,
+		paddingVertical: 10,
+		borderRadius: 8,
+		borderWidth: StyleSheet.hairlineWidth,
+		borderColor: '#ddd',
+	},
+	navLeft: {},
+	navRight: {},
+	navText: { fontSize: 14, fontWeight: '600', color: '#333' },
 });

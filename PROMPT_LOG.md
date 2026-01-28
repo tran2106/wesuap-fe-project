@@ -159,3 +159,20 @@
 - Updated `components/SkillsTag.tsx` styles.
 - Verified in Search page cards that three tags fit per row under typical screen widths.
 
+-------------------------------------------------------
+# Prompt Log Entry - Revamp Search to Single Match View
+
+## Goal
+- Show one matched profile at a time with ability to navigate between matches, instead of listing all profiles.
+
+## Prompt
+- "so i did this part wrong, i was not dupposed to show a list of people i matched with but just a single profile i get matched with and i can swap back and forth bettween other matches, can you clean up my code to revamp this issue so each person i match with get their own big component page instead of a list docment this in prompt log"
+
+## Result
+- Updated `app/search.tsx` to display one `ProfileCard` at a time with Prev/Next buttons, showing current index out of total.
+
+## Edits / Verification
+- Replaced ScrollView list with stateful `index` and navigation controls.
+- Verified toggling between three mock matches updates the card.
+- Kept BottomNav at the bottom.
+

@@ -17,30 +17,39 @@ type Props = {
 
 export default function ProfileCard({ profile }: Props) {
   return (
-    <View style={styles.card}>
-      {/* Left: Avatar */}
-      <Image source={{ uri: profile.avatarUrl }} style={styles.avatar} />
+    <View style={styles.cardWrapper}>
+      <View style={styles.screen}>
+        {/* Top: Centered avatar */}
+        <View style={styles.avatarSection}>
+          <Image source={{ uri: profile.avatarUrl }} style={styles.avatarLarge} />
+          <Text style={styles.nameLarge}>{profile.displayName}</Text>
+        </View>
 
-      {/* Middle: Text content */}
-      <View style={styles.content}>
-        <View style={styles.headerRow}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.name}>{profile.displayName}</Text>
-            <Text style={styles.location}>{profile.location}</Text>
+        {/* Location */}
+        <Text style={styles.locationCenter}>{profile.location}</Text>
+
+        {/* Bio */}
+        <Text style={styles.bioCenter}>{profile.bio}</Text>
+
+        {/* Placeholder for assets component */}
+        <View style={styles.assetsPlaceholder}>
+          {/* Assets component will go here */}
+        </View>
+
+        {/* Skills (optional) */}
+        {profile.skills?.length ? (
+          <View style={styles.tagsRowCenter}>
+            {profile.skills.map((tag) => (
+              <SkillsTag key={tag} label={tag} />
+            ))}
           </View>
-          {/* Right: Send Offer button */}
+        ) : null}
+
+        {/* Bottom: Send Offer button */}
+        <View style={styles.footer}>
           <TouchableOpacity style={styles.offerButton} accessibilityRole="button">
             <Text style={styles.offerButtonText}>Send Offer</Text>
           </TouchableOpacity>
-        </View>
-
-        <Text style={styles.bio} numberOfLines={3}>{profile.bio}</Text>
-
-        {/* Skill tags */}
-        <View style={styles.tagsRow}>
-          {profile.skills?.map((tag) => (
-            <SkillsTag key={tag} label={tag} />
-          ))}
         </View>
       </View>
     </View>
@@ -48,67 +57,83 @@ export default function ProfileCard({ profile }: Props) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
+  cardWrapper: {
+    alignSelf: 'center',
+    width: '92%',
+    maxWidth: 440, // persist size on larger screens
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    marginHorizontal: 16,
-    marginVertical: 8,
+    borderRadius: 16,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#e5e5e5',
     shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30, // keep circular
-    backgroundColor: '#f2f2f2',
-    marginRight: 12,
-    alignSelf: 'flex-start',
-  },
-  content: {
+  screen: {
     flex: 1,
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 16,
   },
-  headerRow: {
-    flexDirection: 'row',
+  avatarSection: {
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 12,
   },
-  name: {
-    fontSize: 16, // smaller
+  avatarLarge: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: '#f2f2f2',
+    marginBottom: 8,
+  },
+  nameLarge: {
+    fontSize: 20,
     fontWeight: '700',
     color: '#111',
   },
-  location: {
-    fontSize: 12, // smaller
+  locationCenter: {
+    textAlign: 'center',
+    fontSize: 14,
     color: '#666',
-    marginTop: 2,
+    marginBottom: 12,
   },
-  offerButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    backgroundColor: '#ff7a00',
-    borderRadius: 8,
-    marginLeft: 8,
-  },
-  offerButtonText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  bio: {
-    fontSize: 13,
+  bioCenter: {
+    textAlign: 'center',
+    fontSize: 14,
     color: '#333',
+    marginHorizontal: 8,
   },
-  tagsRow: {
+  assetsPlaceholder: {
+    height: 140,
+    marginTop: 16,
+    marginBottom: 16,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#e5e5e5',
+    backgroundColor: '#fafafa',
+  },
+  tagsRowCenter: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginTop: 8,
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  footer: {
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  offerButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: '#ff7a00',
+    borderRadius: 10,
+  },
+  offerButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
   },
 });
