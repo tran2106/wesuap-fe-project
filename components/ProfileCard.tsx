@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import SkillsTag, { type Skill } from '@/components/SkillsTag';
+import AssetTag, { type AssetTag as AssetTagLabel } from '@/components/AssetTag';
+import AssetCard, { type Asset } from '@/components/AssetCard';
 
 export type Profile = {
   id: string;
@@ -8,7 +9,8 @@ export type Profile = {
   location: string;
   bio: string;
   avatarUrl: string;
-  skills?: Skill[]; // skill tags
+  skills?: AssetTagLabel[]; // asset/skill tags
+  assets?: Asset[]; // assets this profile can teach
 };
 
 type Props = {
@@ -31,19 +33,10 @@ export default function ProfileCard({ profile }: Props) {
         {/* Bio */}
         <Text style={styles.bioCenter}>{profile.bio}</Text>
 
-        {/* Placeholder for assets component */}
-        <View style={styles.assetsPlaceholder}>
-          {/* Assets component will go here */}
-        </View>
-
-        {/* Skills (optional) */}
-        {profile.skills?.length ? (
-          <View style={styles.tagsRowCenter}>
-            {profile.skills.map((tag) => (
-              <SkillsTag key={tag} label={tag} />
-            ))}
-          </View>
-        ) : null}
+        {/* Render assets as cards */}
+        {profile.assets?.map((a) => (
+          <AssetCard key={a.id} asset={a} />
+        ))}
 
         {/* Bottom: Send Offer button */}
         <View style={styles.footer}>
@@ -60,7 +53,7 @@ const styles = StyleSheet.create({
   cardWrapper: {
     alignSelf: 'center',
     width: '92%',
-    maxWidth: 440, // persist size on larger screens
+    maxWidth: 480, // allow slightly larger on tablets
     backgroundColor: '#fff',
     borderRadius: 16,
     borderWidth: StyleSheet.hairlineWidth,
@@ -76,6 +69,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 24,
     paddingBottom: 16,
+    rowGap: 12, // responsive spacing between children
   },
   avatarSection: {
     alignItems: 'center',
@@ -104,22 +98,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
     marginHorizontal: 8,
-  },
-  assetsPlaceholder: {
-    height: 140,
-    marginTop: 16,
-    marginBottom: 16,
-    borderRadius: 12,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#e5e5e5',
-    backgroundColor: '#fafafa',
-  },
-  tagsRowCenter: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    justifyContent: 'center',
-    marginBottom: 12,
   },
   footer: {
     paddingVertical: 8,

@@ -100,7 +100,7 @@
 - Replace IndustryTag with SkillsTag and support a large predefined list of skill tags with distinct, accessible colors.
 
 ## Prompt
-- "i removed industry tag and skillstag.tsx will replace that file. For tags available i want to choose these fields [...] make sure to match the style to each unique tag document this prompt_log.md"
+- "i removed industry tag and skillstag.tsx will replace that file. For tags available i want to choose these fields [...] make sure to match the style to each unique tag document this in prompt_log.md"
 
 ## Result
 - Updated `components/SkillsTag.tsx` to include all requested tag labels with a COLOR_MAP defining bg/fg/border for each and a readable fallback.
@@ -175,4 +175,38 @@
 - Replaced ScrollView list with stateful `index` and navigation controls.
 - Verified toggling between three mock matches updates the card.
 - Kept BottomNav at the bottom.
+
+-------------------------------------------------------
+# Prompt Log Entry - Add Sample Assets to Search Profiles
+
+## Goal
+- Display asset cards on matched profiles to clarify teachable skills.
+
+## Prompt
+- "add Add sample assets to your mock profile in app/search.tsx document in prompt -log"
+
+## Result
+- Added `assets` arrays to mock profiles in `app/search.tsx` with title, description, tag, portfolio link, optional image, and socials.
+- AssetCard now renders within ProfileCard for each asset.
+
+## Edits / Verification
+- Updated `MATCHES` mock data with realistic assets for Alex, Maya, and Samir.
+- Verified on the Search page that assets display with tag, CTA, optional image placeholder, and social icons.
+
+-------------------------------------------------------
+# Prompt Log Entry - Remove Asset Placeholder & Responsive Card
+
+## Goal
+- Ensure assets load directly under bio and make the profile card adapt to screen sizes.
+
+## Prompt
+- "document in prompt -log, in profile card remove the blank space in under bio and on top of asset so asset can load properly, let profile card size changable based on screen size document this in prompt_log"
+
+## Result
+- Removed the assets placeholder from `components/ProfileCard.tsx` so assets render immediately below bio.
+- Adjusted card sizing: width 92% with maxWidth 480 and added `rowGap` for responsive spacing.
+
+## Edits / Verification
+- Edited `ProfileCard.tsx` to delete the placeholder and tweak styles.
+- Verified assets appear directly after bio and the card scales on different device widths.
 

@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import BottomNav from '@/components/BottomNav';
 import ProfileCard, { type Profile } from '@/components/ProfileCard';
-import { type Skill } from '@/components/SkillsTag';
+import { type AssetTag as AssetTagLabel } from '@/components/AssetTag';
 import React from 'react';
 
 const MATCHES: Profile[] = [
@@ -11,7 +11,24 @@ const MATCHES: Profile[] = [
 		location: 'New York, NY',
 		bio: 'Frontend dev. Lover of React Native and coffee.',
 		avatarUrl: 'https://i.pravatar.cc/150?img=1',
-		skills: ['Web Development', 'Tech Support & Development', 'Coffee'] as Skill[],
+		skills: ['Web Development', 'Tech Support & Development', 'Coffee'] as AssetTagLabel[],
+		assets: [
+			{
+				id: 'a1',
+				title: 'React Native Coaching',
+				description: 'Hands-on sessions to build and ship RN apps.',
+				tag: 'Web Development',
+				portfolioUrl: 'https://example.com/alex-portfolio',
+				socials: { github: 'https://github.com/alex', twitter: 'https://twitter.com/alex' },
+			},
+			{
+				id: 'a2',
+				title: 'TypeScript Fundamentals',
+				description: 'Learn typing patterns for scalable JS code.',
+				tag: 'Online Courses',
+				portfolioUrl: 'https://example.com/ts-course',
+			},
+		],
 	},
 	{
 		id: '2',
@@ -19,7 +36,18 @@ const MATCHES: Profile[] = [
 		location: 'San Francisco, CA',
 		bio: 'Product designer. Building delightful mobile experiences.',
 		avatarUrl: 'https://i.pravatar.cc/150?img=5',
-		skills: ['Art & Design', 'Web Design', 'Marketing & Sales'] as Skill[],
+		skills: ['Art & Design', 'Web Design', 'Marketing & Sales'] as AssetTagLabel[],
+		assets: [
+			{
+				id: 'm1',
+				title: 'Mobile UI Kit',
+				description: 'Pixel-perfect components for iOS/Android.',
+				tag: 'Art & Design',
+				portfolioUrl: 'https://example.com/maya-ui',
+				imageUrl: 'https://picsum.photos/200/200?random=10',
+				socials: { instagram: 'https://instagram.com/maya' },
+			},
+		],
 	},
 	{
 		id: '3',
@@ -27,7 +55,17 @@ const MATCHES: Profile[] = [
 		location: 'Austin, TX',
 		bio: 'Full-stack engineer. Open source contributor.',
 		avatarUrl: 'https://i.pravatar.cc/150?img=8',
-		skills: ['Data', 'Professional Development', 'Networking'] as Skill[],
+		skills: ['Data', 'Professional Development', 'Networking'] as AssetTagLabel[],
+		assets: [
+			{
+				id: 's1',
+				title: 'Data Viz Workshop',
+				description: 'Make compelling charts with D3 and React.',
+				tag: 'Professional Development',
+				portfolioUrl: 'https://example.com/samir-dataviz',
+				socials: { linkedin: 'https://linkedin.com/in/samir' },
+			},
+		],
 	},
 ];
 
