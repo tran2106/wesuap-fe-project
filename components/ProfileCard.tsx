@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Platform, Animated } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Platform } from 'react-native';
 import AssetTag, { type AssetTag as AssetTagLabel } from '@/components/AssetTag';
 import AssetCard, { type Asset } from '@/components/AssetCard';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,26 +26,22 @@ type Props = {
   profile: Profile;
 };
 
+// Track sent offers globally by profile ID
+const sentOffers = new Set<string>();
+
 export default function ProfileCard({ profile }: Props) {
   const { height, width } = Dimensions.get('window');
   const isMobile = width < 768;
   const isWeb = Platform.OS === 'web';
   const [showOfferForm, setShowOfferForm] = useState(false);
-  const [offerSent, setOfferSent] = useState(false);
-  const buttonOpacity = React.useRef(new Animated.Value(1)).current;
+  const [offerSent, setOfferSent] = useState(sentOffers.has(profile.id));
   
   const cardHeight = isWeb ? Math.min(height * 0.8, 700) : undefined;
 
   const handleOfferSubmitted = () => {
+    sentOffers.add(profile.id);
     setOfferSent(true);
-    setShowOfferForm(false);
-    // Fade out button
-    Animated.timing(buttonOpacity, {
-      toValue: 0,
-      duration: 1500,
-      delay: 500,
-      useNativeDriver: true,
-    }).start();
+    // Don't close the modal here - let the user close it manually from the success screen
   };
 
   return (
@@ -104,23 +100,21 @@ export default function ProfileCard({ profile }: Props) {
       </ScrollView>
 
       <View style={styles.footer}>
-        <Animated.View style={{ opacity: buttonOpacity, width: '100%' }}>
-          <TouchableOpacity 
-            style={[styles.offerButton, offerSent && styles.offerButtonSent]} 
-            accessibilityRole="button"
-            onPress={() => !offerSent && setShowOfferForm(true)}
-            disabled={offerSent}
-          >
-            {offerSent ? (
-              <View style={styles.sentContainer}>
-                <Ionicons name="checkmark-circle" size={20} color="#fff" />
-                <Text style={styles.offerButtonText}>Offer Sent</Text>
-              </View>
-            ) : (
-              <Text style={styles.offerButtonText}>Send Offer</Text>
-            )}
-          </TouchableOpacity>
-        </Animated.View>
+        <TouchableOpacity 
+          style={[styles.offerButton, offerSent && styles.offerButtonSent]} 
+          accessibilityRole="button"
+          onPress={() => !offerSent && setShowOfferForm(true)}
+          disabled={offerSent}
+        >
+          {offerSent ? (
+            <View style={styles.sentContainer}>
+              <Ionicons name="checkmark-circle" size={20} color="#fff" />
+              <Text style={styles.offerButtonText}>Offer Sent</Text>
+            </View>
+          ) : (
+            <Text style={styles.offerButtonText}>Send Offer</Text>
+          )}
+        </TouchableOpacity>
       </View>
 
       {/* Offer Form Modal */}

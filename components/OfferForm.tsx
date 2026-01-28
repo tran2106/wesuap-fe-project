@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-const MIN_CHARS = 50;
+const MIN_CHARS = 0;
 const MAX_CHARS = 300;
 const ORANGE = '#FF6A00';
 
@@ -51,8 +51,8 @@ export default function OfferForm({ visible, onClose, onSubmitSuccess, recipient
   ).current;
 
   // Validation
-  const isOfferValid = whatIOffer.length >= MIN_CHARS && whatIOffer.length <= MAX_CHARS;
-  const isWantValid = whatIWant.length >= MIN_CHARS && whatIWant.length <= MAX_CHARS;
+  const isOfferValid = whatIOffer.trim().length > 0 && whatIOffer.length <= MAX_CHARS;
+  const isWantValid = whatIWant.trim().length > 0 && whatIWant.length <= MAX_CHARS;
   const isFormValid = isOfferValid && isWantValid;
 
   const handleSubmit = async () => {
@@ -115,11 +115,8 @@ export default function OfferForm({ visible, onClose, onSubmitSuccess, recipient
       )
     ).start();
 
-    // Close modal and notify parent after success
-    setTimeout(() => {
-      onSubmitSuccess();
-      handleClose();
-    }, 2000);
+    // Notify parent immediately after success (don't auto-close)
+    onSubmitSuccess();
   };
 
   const handleClose = () => {
@@ -141,7 +138,7 @@ export default function OfferForm({ visible, onClose, onSubmitSuccess, recipient
 
   const getCharCountColor = (length: number, isRequired: boolean) => {
     if (!isRequired) return '#999';
-    if (length < MIN_CHARS) return '#FF3B30';
+    if (length === 0) return '#FF3B30';
     if (length > MAX_CHARS) return '#FF3B30';
     return '#34C759';
   };
@@ -174,7 +171,7 @@ export default function OfferForm({ visible, onClose, onSubmitSuccess, recipient
                   multiline
                   numberOfLines={6}
                   maxLength={MAX_CHARS}
-                  placeholder="Describe what you can offer in exchange (50-300 characters)"
+                  placeholder="Describe what you can offer in exchange (required, max 300 characters)"
                   placeholderTextColor="#999"
                   value={whatIOffer}
                   onChangeText={setWhatIOffer}
@@ -187,7 +184,6 @@ export default function OfferForm({ visible, onClose, onSubmitSuccess, recipient
                   ]}
                 >
                   {whatIOffer.length}/{MAX_CHARS} characters
-                  {whatIOffer.length < MIN_CHARS && ` (min ${MIN_CHARS})`}
                 </Text>
               </View>
 
@@ -204,7 +200,7 @@ export default function OfferForm({ visible, onClose, onSubmitSuccess, recipient
                   multiline
                   numberOfLines={6}
                   maxLength={MAX_CHARS}
-                  placeholder="Describe what you're looking for (50-300 characters)"
+                  placeholder="Describe what you're looking for (required, max 300 characters)"
                   placeholderTextColor="#999"
                   value={whatIWant}
                   onChangeText={setWhatIWant}
@@ -217,7 +213,6 @@ export default function OfferForm({ visible, onClose, onSubmitSuccess, recipient
                   ]}
                 >
                   {whatIWant.length}/{MAX_CHARS} characters
-                  {whatIWant.length < MIN_CHARS && ` (min ${MIN_CHARS})`}
                 </Text>
               </View>
 
@@ -256,7 +251,9 @@ export default function OfferForm({ visible, onClose, onSubmitSuccess, recipient
               {/* Validation hint */}
               {!isFormValid && (whatIOffer.length > 0 || whatIWant.length > 0) && (
                 <Text style={styles.validationHint}>
-                  Please ensure both required fields have 50-300 characters
+                  {whatIOffer.trim().length === 0 || whatIWant.trim().length === 0
+                    ? 'Both required fields must be filled'
+                    : 'Please ensure both fields are under 300 characters'}
                 </Text>
               )}
             </ScrollView>
@@ -300,6 +297,14 @@ export default function OfferForm({ visible, onClose, onSubmitSuccess, recipient
               <Text style={styles.successMessage}>
                 Your offer has been sent to {recipientName}. They'll be notified shortly.
               </Text>
+              
+              {/* Close button on success screen */}
+              <TouchableOpacity 
+                style={styles.successCloseButton} 
+                onPress={handleClose}
+              >
+                <Text style={styles.successCloseButtonText}>Done</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -448,5 +453,23 @@ const styles = StyleSheet.create({
     top: '45%',
     left: '50%',
     borderRadius: 4,
+  },
+  successCloseButton: {
+    marginTop: 24,
+    backgroundColor: ORANGE,
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 12,
+    shadowColor: ORANGE,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
+  successCloseButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
 });

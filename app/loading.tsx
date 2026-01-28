@@ -3,9 +3,44 @@ import { View, StyleSheet, ActivityIndicator, Text, Animated, Easing, Dimensions
 import { StatusBar } from 'expo-status-bar';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import BottomNav from '@/components/BottomNav';
+import ProfileCard, { type Profile } from '@/components/ProfileCard';
+import { type AssetTag as AssetTagLabel } from '@/components/AssetTag';
 
 const ORANGE = '#FF6A00';
 const { width } = Dimensions.get('window');
+
+// Single search result profile - same as in search.tsx
+const SEARCH_RESULT: Profile = {
+	id: '2',
+	displayName: 'Maya Lee',
+	location: 'San Francisco, CA',
+	bio: 'Product designer. Building delightful mobile experiences with a focus on user-centered design and accessibility.',
+	avatarUrl: 'https://i.pravatar.cc/150?img=5',
+	skills: ['Art & Design', 'Web Design', 'Marketing & Sales'] as AssetTagLabel[],
+	socials: {
+		instagram: 'https://instagram.com/maya',
+		website: 'https://maya.design',
+	},
+	assets: [
+		{
+			id: 'm1',
+			title: 'Mobile UI Kit',
+			description: 'Pixel-perfect components for iOS/Android.',
+			tags: ['Art & Design', 'Web Design', 'Content Creation'],
+			portfolioUrl: 'https://example.com/maya-ui',
+			imageUrl: 'https://picsum.photos/200/200?random=10',
+			socials: { instagram: 'https://instagram.com/maya' },
+		},
+		{
+			id: 'm2',
+			title: 'UX Design Workshop',
+			description: 'Learn user research and prototyping techniques.',
+			tags: ['Art & Design', 'Professional Development', 'Online Courses'],
+			portfolioUrl: 'https://example.com/maya-workshop',
+		},
+	],
+};
 
 export default function LoadingPage() {
   const router = useRouter();
@@ -70,6 +105,10 @@ export default function LoadingPage() {
             }),
           ]).start(() => {
             navigated.current = true;
+            // Set flag before navigating
+            if (typeof sessionStorage !== 'undefined') {
+              sessionStorage.setItem('cameFromLoading', 'true');
+            }
             router.replace('/search');
           });
         }
@@ -80,8 +119,23 @@ export default function LoadingPage() {
   }, [router, titleTranslateY, particles]);
 
   return (
-    <View style={styles.container}>
-      <Animated.View style={[styles.slideWrapper, { transform: [{ translateX: slideX }, { scale: slideScale }] }]}>
+    <View style={styles.pageContainer}>
+      {/* Search page content underneath */}
+      <View style={styles.searchContainer}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Search Results</Text>
+          <Text style={styles.subtitle}>Found a potential match</Text>
+        </View>
+
+        <View style={styles.cardContainer}>
+          <ProfileCard profile={SEARCH_RESULT} />
+        </View>
+
+        <BottomNav />
+      </View>
+
+      {/* Orange loading overlay that slides away */}
+      <Animated.View style={[styles.overlayContainer, { transform: [{ translateX: slideX }, { scale: slideScale }] }]}>
         <StatusBar style="light" />
 
         {phase === 'loading' ? (
@@ -119,18 +173,49 @@ export default function LoadingPage() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  pageContainer: {
     flex: 1,
-    backgroundColor: ORANGE,
+    backgroundColor: '#FAFAFA',
   },
-  slideWrapper: {
+  searchContainer: {
+    flex: 1,
+    backgroundColor: '#FAFAFA',
+  },
+  header: {
+    paddingTop: 24,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#666',
+  },
+  cardContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+  },
+  overlayContainer: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
+    backgroundColor: ORANGE,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 9999,
   },
   loadingText: {
     marginTop: 12,
