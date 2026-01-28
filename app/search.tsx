@@ -9,6 +9,8 @@ const MOCK_PROFILES: Profile[] = [
 		location: 'New York, NY',
 		bio: 'Frontend dev. Lover of React Native and coffee.',
 		avatarUrl: 'https://i.pravatar.cc/150?img=1',
+		headline: 'React Native Engineer | Building smooth mobile UX',
+		skills: ['Engineering', 'Product', 'Design'],
 	},
 	{
 		id: '2',
@@ -16,6 +18,8 @@ const MOCK_PROFILES: Profile[] = [
 		location: 'San Francisco, CA',
 		bio: 'Product designer. Building delightful mobile experiences.',
 		avatarUrl: 'https://i.pravatar.cc/150?img=5',
+		headline: 'Mobile Product Designer | Accessibility advocate',
+		skills: ['Design', 'Marketing'],
 	},
 	{
 		id: '3',
@@ -23,6 +27,8 @@ const MOCK_PROFILES: Profile[] = [
 		location: 'Austin, TX',
 		bio: 'Full-stack engineer. Open source contributor.',
 		avatarUrl: 'https://i.pravatar.cc/150?img=8',
+		headline: 'Full-stack Dev | TypeScript, Node.js, and Data viz',
+		skills: ['Engineering', 'Data', 'Operations'],
 	},
 ];
 

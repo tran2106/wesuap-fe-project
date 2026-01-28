@@ -55,3 +55,22 @@
 - Verified card renders in `app/search.tsx` by viewing mock profiles.
 - Checked avatar remains circular and button aligns to the right.
 
+-------------------------------------------------------
+# Prompt Log Entry - IndustryTag Component and Integration
+
+## Goal
+- Create a reusable tag component to display users' industry/skills with accessible color contrast and integrate into ProfileCard on the Search page using hard-coded data.
+
+## Prompt
+- "cretae a resuable component that is a tag to display user's skills industry on their profile card, keep them different colors for each industry, make sure the words on the tags is accessible to the user clearly importt this into profile cards using hard coded data. document the process in prompt_log"
+
+## Result
+- Implemented `components/IndustryTag.tsx` with typed industries and a color map ensuring readable foreground/background.
+- Updated `components/ProfileCard.tsx` to render `IndustryTag` for the `skills` array.
+- Added industry tags to `MOCK_PROFILES` in `app/search.tsx`.
+
+## Edits / Verification
+- Created `IndustryTag.tsx` with accessible colors and styles.
+- Imported and rendered tags in `ProfileCard` under the bio.
+- Hard-coded `skills` into mock profiles and verified tags render with distinct colors on the Search page.
+
