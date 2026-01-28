@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import BottomNav from '@/components/BottomNav';
 import ProfileCard, { type Profile } from '@/components/ProfileCard';
+import { type Skill } from '@/components/SkillsTag';
 
 const MOCK_PROFILES: Profile[] = [
 	{
@@ -9,8 +10,7 @@ const MOCK_PROFILES: Profile[] = [
 		location: 'New York, NY',
 		bio: 'Frontend dev. Lover of React Native and coffee.',
 		avatarUrl: 'https://i.pravatar.cc/150?img=1',
-		headline: 'React Native Engineer | Building smooth mobile UX',
-		skills: ['Engineering', 'Product', 'Design'],
+		skills: ['Web Development', 'Tech Support & Development', 'Coffee'] as Skill[],
 	},
 	{
 		id: '2',
@@ -18,8 +18,7 @@ const MOCK_PROFILES: Profile[] = [
 		location: 'San Francisco, CA',
 		bio: 'Product designer. Building delightful mobile experiences.',
 		avatarUrl: 'https://i.pravatar.cc/150?img=5',
-		headline: 'Mobile Product Designer | Accessibility advocate',
-		skills: ['Design', 'Marketing'],
+		skills: ['Art & Design', 'Web Design', 'Marketing & Sales'] as Skill[],
 	},
 	{
 		id: '3',
@@ -27,8 +26,7 @@ const MOCK_PROFILES: Profile[] = [
 		location: 'Austin, TX',
 		bio: 'Full-stack engineer. Open source contributor.',
 		avatarUrl: 'https://i.pravatar.cc/150?img=8',
-		headline: 'Full-stack Dev | TypeScript, Node.js, and Data viz',
-		skills: ['Engineering', 'Data', 'Operations'],
+		skills: ['Data', 'Professional Development', 'Networking'] as Skill[],
 	},
 ];
 

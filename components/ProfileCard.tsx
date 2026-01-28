@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import IndustryTag, { type Industry } from '@/components/IndustryTag';
+import SkillsTag, { type Skill } from '@/components/SkillsTag';
 
 export type Profile = {
   id: string;
@@ -8,8 +8,7 @@ export type Profile = {
   location: string;
   bio: string;
   avatarUrl: string;
-  headline?: string; // short one-line headline
-  skills?: Industry[]; // skill tags
+  skills?: Skill[]; // skill tags
 };
 
 type Props = {
@@ -35,18 +34,12 @@ export default function ProfileCard({ profile }: Props) {
           </TouchableOpacity>
         </View>
 
-        {profile.headline ? (
-          <Text style={styles.headline} numberOfLines={2}>
-            {profile.headline}
-          </Text>
-        ) : null}
-
         <Text style={styles.bio} numberOfLines={3}>{profile.bio}</Text>
 
         {/* Skill tags */}
         <View style={styles.tagsRow}>
           {profile.skills?.map((tag) => (
-            <IndustryTag key={tag} label={tag} />
+            <SkillsTag key={tag} label={tag} />
           ))}
         </View>
       </View>
@@ -107,11 +100,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     fontWeight: '700',
-  },
-  headline: {
-    fontSize: 14,
-    color: '#222',
-    marginBottom: 4,
   },
   bio: {
     fontSize: 13,

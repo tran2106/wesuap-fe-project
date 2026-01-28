@@ -74,3 +74,88 @@
 - Imported and rendered tags in `ProfileCard` under the bio.
 - Hard-coded `skills` into mock profiles and verified tags render with distinct colors on the Search page.
 
+-------------------------------------------------------
+# Prompt Log Entry - Rename IndustryTag to SkillsTag
+
+## Goal
+- Rename the industry tag component to SkillsTag and update all usages to reflect skill tagging across profiles.
+
+## Prompt
+- "change this into skills tag name add to prompt log changes"
+
+## Result
+- Created `components/SkillsTag.tsx` mirroring the previous implementation but renamed types to `Skill` and component to `SkillsTag`.
+- Updated `components/ProfileCard.tsx` to import and render `SkillsTag` and use `skills?: Skill[]`.
+- Ensured mock profiles in `app/search.tsx` still render tags correctly.
+
+## Edits / Verification
+- Added `SkillsTag.tsx` with accessible color mappings.
+- Replaced imports and types in `ProfileCard.tsx`.
+- Verified tags render on the Search page for all profiles.
+
+-------------------------------------------------------
+# Prompt Log Entry - Expanded SkillsTag Palette
+
+## Goal
+- Replace IndustryTag with SkillsTag and support a large predefined list of skill tags with distinct, accessible colors.
+
+## Prompt
+- "i removed industry tag and skillstag.tsx will replace that file. For tags available i want to choose these fields [...] make sure to match the style to each unique tag document this prompt_log.md"
+
+## Result
+- Updated `components/SkillsTag.tsx` to include all requested tag labels with a COLOR_MAP defining bg/fg/border for each and a readable fallback.
+
+## Edits / Verification
+- Edited `SkillsTag.tsx` types and COLOR_MAP; added fallback for unknown labels.
+- Verified tags render with clear contrast on profile cards (via Search page mock data).
+
+-------------------------------------------------------
+# Prompt Log Entry - Search Profiles Updated to SkillsTag
+
+## Goal
+- Update the Search page to use the new SkillsTag labels and remove any previous industry-only tags.
+
+## Prompt
+- "update search.tsx with new profile cards with new tags that was introduced in skillstag.tsx, remove any tags that come from industry tags document this in prompt log"
+
+## Result
+- `app/search.tsx` now uses `skills` arrays with labels from `SkillsTag.tsx` and imports the `Skill` type for safety.
+
+## Edits / Verification
+- Replaced old labels with new ones: Web Development, Tech Support & Development, Coffee, Art & Design, Web Design, Marketing & Sales, Data, Professional Development, Networking.
+- Imported `Skill` and annotated arrays `as Skill[]` to satisfy the union type.
+- Verified the Search page renders cards with colored tags and no type errors.
+
+-------------------------------------------------------
+# Prompt Log Entry - Remove Headline from ProfileCard
+
+## Goal
+- Simplify the ProfileCard by removing the headline field while keeping bio and other info.
+
+## Prompt
+- "for profile card component, i want to remove the fields for headline, keep bio document this in prompt log"
+
+## Result
+- Updated `components/ProfileCard.tsx` to remove the `headline` field from the type and UI.
+- Adjusted mock profiles in `app/search.tsx` to remove `headline` entries.
+
+## Edits / Verification
+- Edited ProfileCard to drop headline section and kept bio/skills tags.
+- Verified Search page renders cards without type errors and layout remains consistent.
+
+-------------------------------------------------------
+# Prompt Log Entry - Resize SkillsTag
+
+## Goal
+- Make skills tags smaller so three fit on one line in ProfileCard.
+
+## Prompt
+- "can u resize the the skills tags a bit sma;ller so they fit all 3 in one line document in prompt log"
+
+## Result
+- Reduced tag padding (horizontal 8, vertical 4) and font size (11). Slightly smaller radius (12).
+
+## Edits / Verification
+- Updated `components/SkillsTag.tsx` styles.
+- Verified in Search page cards that three tags fit per row under typical screen widths.
+
