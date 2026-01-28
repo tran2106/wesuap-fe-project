@@ -210,3 +210,91 @@
 - Edited `ProfileCard.tsx` to delete the placeholder and tweak styles.
 - Verified assets appear directly after bio and the card scales on different device widths.
 
+-------------------------------------------------------
+# Prompt Log Entry - Revamp AssetCard and Update Mock Assets
+
+## Goal
+- Make AssetCard compact with up to 3 tags under title and move View Portfolio to top-right.
+
+## Prompt
+- "i want to revamo the asset card i want max 3 tags for each asset card and make it compact and smaller under asset name, view portfolio should be on the top right document this in prompt log"
+
+## Result
+- Refactored `components/AssetCard.tsx` to accept `tags?: AssetTagType[]`, render up to 3 compact tags under the title, and position the View Portfolio CTA at the top-right.
+- Updated mock assets in `app/search.tsx` to include multiple tags.
+
+## Edits / Verification
+- Edited AssetCard layout, spacing, and icon sizes for compact design.
+- Modified `MATCHES` in Search to add `tags` arrays for assets and verified rendering.
+
+-------------------------------------------------------
+# Prompt Log Entry - Tweak View Portfolio Button Style
+
+## Goal
+- Make the View Portfolio CTA smaller and less flashy.
+
+## Prompt
+- "make tghe view portfolio buttom smller and not range probebly something less flashy document in prompt log"
+
+## Result
+- Updated `components/AssetCard.tsx` to use a neutral gray button with smaller padding and font, replacing the orange style.
+
+## Edits / Verification
+- Adjusted `portfolioBtn` and `portfolioText` styles.
+- Verified the button appears smaller and subdued across asset cards.
+
+-------------------------------------------------------
+# Prompt Log Entry - Move Portfolio CTA Below Socials
+
+## Goal
+- Reposition the View Portfolio button under the social icons in the asset card.
+
+## Prompt
+- "document in prompt log, i want to move portfolio under social icons"
+
+## Result
+- Updated `components/AssetCard.tsx` to render the View Portfolio CTA below the socials with a small top margin.
+
+## Edits / Verification
+- Adjusted the footer layout to place the CTA after the icons.
+- Verified the button appears beneath the social icons on asset cards.
+
+-------------------------------------------------------
+# Prompt Log Entry - Rename Search page to MatchedPage
+
+## Goal
+- Rename the Search page/component to MatchedPage to better reflect the single matched-profile view.
+
+## Prompt
+- "can you rename search page to MatchedPage" and "yes" to also change the route filename.
+
+## Result
+- Updated component export name in `app/search.tsx` to `MatchedPage`.
+- Created a new route file `app/matched.tsx` with the MatchedPage component to align routing with the new name.
+
+## Edits / Verification
+- Edited `app/search.tsx` to rename `SearchPage` to `MatchedPage`.
+- Added `app/matched.tsx` with the same functionality and component export.
+- Verified the matched profile UI renders and navigation works with Prev/Next controls.
+- Next: optionally remove `app/search.tsx` and update redirects/links to point to `matched` to avoid duplicate routes.
+
+-------------------------------------------------------
+# Prompt Log Entry - Set Matched as Initial Route
+
+## Goal
+- Make the Matched page the app’s initial route to emphasize the single matched-profile flow.
+
+## Prompt
+- "matched as the iniitial route" and "yes" to log the change.
+
+## Result
+- Updated `app/_layout.tsx` to set `initialRouteName` to `matched` and added the `matched` screen to the stack.
+
+## Edits / Verification
+- Edited `app/_layout.tsx`:
+  - `initialRouteName="matched"`.
+  - Added `<Stack.Screen name="matched" options={{ title: 'Matched', headerShown: false }} />`.
+- Verified the app launches directly into MatchedPage with working navigation and bottom nav.
+
+-------------------------------------------------------
+

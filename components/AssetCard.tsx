@@ -7,7 +7,8 @@ export type Asset = {
   id: string;
   title: string;
   description: string; // 1–2 lines
-  tag: AssetTagType; // same labels as skills
+  // support multiple tags, will render up to 3
+  tags?: AssetTagType[]; // same labels as skills
   portfolioUrl: string; // CTA link
   imageUrl?: string; // optional
   socials?: Partial<{
@@ -26,6 +27,8 @@ export default function AssetCard({ asset }: Props) {
     if (url) Linking.openURL(url).catch(() => {});
   };
 
+  const compactTags = (asset.tags ?? []).slice(0, 3);
+
   return (
     <View style={styles.card}>
       {/* Optional Image */}
@@ -34,52 +37,38 @@ export default function AssetCard({ asset }: Props) {
           <Image source={{ uri: asset.imageUrl }} style={styles.image} />
         ) : (
           <View style={styles.placeholder}>
-            <Ionicons name="images-outline" size={36} color="#999" />
+            <Ionicons name="images-outline" size={28} color="#999" />
           </View>
         )}
       </View>
 
       {/* Text content */}
       <View style={styles.content}>
-        <View style={styles.titleRow}>
-          <Text style={styles.title}>{asset.title}</Text>
-          <AssetTag label={asset.tag} />
+        {/* Top row: Title + View Portfolio */}
+        <View style={styles.topRow}>
+          <Text style={styles.title} numberOfLines={1}>{asset.title}</Text>
         </View>
+
+        {/* Compact tags under title */}
+        {compactTags.length ? (
+          <View style={styles.tagsRow}>
+            {compactTags.map((t) => (
+              <View key={t} style={styles.tagWrapper}>
+                <AssetTag label={t} />
+              </View>
+            ))}
+          </View>
+        ) : null}
+
+        {/* Description */}
         <Text style={styles.desc} numberOfLines={2}>{asset.description}</Text>
 
-        {/* Footer: Social icons + Portfolio CTA */}
+        {/* Footer: Portfolio CTA only (social icons removed) */}
         <View style={styles.footer}>
-          <View style={styles.socials}>
-            {asset.socials?.twitter ? (
-              <TouchableOpacity onPress={() => openUrl(asset.socials?.twitter)} accessibilityRole="button" style={styles.iconBtn}>
-                <Ionicons name="logo-twitter" size={18} color="#1DA1F2" />
-              </TouchableOpacity>
-            ) : null}
-            {asset.socials?.instagram ? (
-              <TouchableOpacity onPress={() => openUrl(asset.socials?.instagram)} accessibilityRole="button" style={styles.iconBtn}>
-                <Ionicons name="logo-instagram" size={18} color="#C13584" />
-              </TouchableOpacity>
-            ) : null}
-            {asset.socials?.github ? (
-              <TouchableOpacity onPress={() => openUrl(asset.socials?.github)} accessibilityRole="button" style={styles.iconBtn}>
-                <Ionicons name="logo-github" size={18} color="#111" />
-              </TouchableOpacity>
-            ) : null}
-            {asset.socials?.linkedin ? (
-              <TouchableOpacity onPress={() => openUrl(asset.socials?.linkedin)} accessibilityRole="button" style={styles.iconBtn}>
-                <Ionicons name="logo-linkedin" size={18} color="#0A66C2" />
-              </TouchableOpacity>
-            ) : null}
-            {asset.socials?.website ? (
-              <TouchableOpacity onPress={() => openUrl(asset.socials?.website)} accessibilityRole="button" style={styles.iconBtn}>
-                <Ionicons name="globe-outline" size={18} color="#333" />
-              </TouchableOpacity>
-            ) : null}
-          </View>
-
+          {/* View Portfolio under content */}
           <TouchableOpacity
             onPress={() => openUrl(asset.portfolioUrl)}
-            style={styles.portfolioBtn}
+            style={[styles.portfolioBtn, { marginTop: 8 }]}
             accessibilityRole="button"
           >
             <Text style={styles.portfolioText}>View Portfolio →</Text>
@@ -94,21 +83,21 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    marginVertical: 8,
+    borderRadius: 14,
+    padding: 14,
+    marginVertical: 10,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#e5e5e5',
     shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
   media: {
-    width: 88,
-    height: 88,
-    borderRadius: 10,
+    width: 96,
+    height: 96,
+    borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#f6f6f6',
     alignItems: 'center',
@@ -118,17 +107,29 @@ const styles = StyleSheet.create({
   image: { width: '100%', height: '100%' },
   placeholder: { alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' },
   content: { flex: 1 },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  title: { fontSize: 16, fontWeight: '700', color: '#111' },
-  desc: { marginTop: 6, fontSize: 13, color: '#333' },
-  footer: { flexDirection: 'row', marginTop: 10, alignItems: 'center', justifyContent: 'space-between' },
-  socials: { flexDirection: 'row', gap: 10 },
+  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  title: { fontSize: 16.5, fontWeight: '700', color: '#111', flex: 1, marginRight: 12 },
+  tagsRow: {
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginTop: 8,
+  },
+  tagWrapper: {
+    marginRight: 6,
+    flexShrink: 1,
+  },
+  desc: { marginTop: 8, fontSize: 13.5, color: '#333' },
+  footer: { marginTop: 6 },
   iconBtn: { padding: 4 },
   portfolioBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: '#ff7a00',
-    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    backgroundColor: '#eef1f4',
+    borderRadius: 6,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#d6d9dc',
   },
-  portfolioText: { color: '#fff', fontSize: 12, fontWeight: '700' },
+  portfolioText: { color: '#333', fontSize: 10, fontWeight: '600' },
 });

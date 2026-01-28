@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import AssetTag, { type AssetTag as AssetTagLabel } from '@/components/AssetTag';
 import AssetCard, { type Asset } from '@/components/AssetCard';
+import { Ionicons } from '@expo/vector-icons';
 
 export type Profile = {
   id: string;
@@ -11,6 +12,13 @@ export type Profile = {
   avatarUrl: string;
   skills?: AssetTagLabel[]; // asset/skill tags
   assets?: Asset[]; // assets this profile can teach
+  socials?: Partial<{
+    twitter: string;
+    instagram: string;
+    github: string;
+    linkedin: string;
+    website: string;
+  }>;
 };
 
 type Props = {
@@ -33,10 +41,45 @@ export default function ProfileCard({ profile }: Props) {
         {/* Bio */}
         <Text style={styles.bioCenter}>{profile.bio}</Text>
 
+        {/* Social icons under bio */}
+        {profile.socials ? (
+          <View style={styles.socials}>
+            {profile.socials.twitter ? (
+              <TouchableOpacity accessibilityRole="button" onPress={() => {}} style={styles.iconBtn}>
+                <Ionicons name="logo-twitter" size={20} color="#1DA1F2" />
+              </TouchableOpacity>
+            ) : null}
+            {profile.socials.instagram ? (
+              <TouchableOpacity accessibilityRole="button" onPress={() => {}} style={styles.iconBtn}>
+                <Ionicons name="logo-instagram" size={20} color="#C13584" />
+              </TouchableOpacity>
+            ) : null}
+            {profile.socials.github ? (
+              <TouchableOpacity accessibilityRole="button" onPress={() => {}} style={styles.iconBtn}>
+                <Ionicons name="logo-github" size={20} color="#111" />
+              </TouchableOpacity>
+            ) : null}
+            {profile.socials.linkedin ? (
+              <TouchableOpacity accessibilityRole="button" onPress={() => {}} style={styles.iconBtn}>
+                <Ionicons name="logo-linkedin" size={20} color="#0A66C2" />
+              </TouchableOpacity>
+            ) : null}
+            {profile.socials.website ? (
+              <TouchableOpacity accessibilityRole="button" onPress={() => {}} style={styles.iconBtn}>
+                <Ionicons name="globe-outline" size={20} color="#333" />
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        ) : null}
+
         {/* Render assets as cards */}
-        {profile.assets?.map((a) => (
-          <AssetCard key={a.id} asset={a} />
-        ))}
+        {profile.assets?.length ? (
+          <ScrollView style={styles.assetsScroll} contentContainerStyle={styles.assetsContent}>
+            {profile.assets.map((a) => (
+              <AssetCard key={a.id} asset={a} />
+            ))}
+          </ScrollView>
+        ) : null}
 
         {/* Bottom: Send Offer button */}
         <View style={styles.footer}>
@@ -98,6 +141,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
     marginHorizontal: 8,
+  },
+  socials: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginTop: 10,
+  },
+  iconBtn: { padding: 6 },
+  assetsScroll: {
+    maxHeight: 300,
+    marginTop: 12,
+    marginBottom: 12,
+  },
+  assetsContent: {
+    paddingBottom: 6,
   },
   footer: {
     paddingVertical: 8,
