@@ -46,12 +46,8 @@ export default function ProfileCard({ profile }: Props) {
 
   return (
     <View style={[styles.cardWrapper, cardHeight ? { height: cardHeight } : { flex: 1 }]}>
-      <ScrollView 
-        style={styles.screen}
-        contentContainerStyle={styles.screenContent}
-        showsVerticalScrollIndicator={false}
-        bounces={false}
-      >
+      {/* Fixed Profile Section */}
+      <View style={styles.fixedSection}>
         <View style={styles.avatarSection}>
           <Image source={{ uri: profile.avatarUrl }} style={styles.avatarLarge} />
           <Text style={styles.nameLarge}>{profile.displayName}</Text>
@@ -89,15 +85,23 @@ export default function ProfileCard({ profile }: Props) {
             ) : null}
           </View>
         ) : null}
+      </View>
 
-        {profile.assets?.length ? (
+      {/* Scrollable Assets Section */}
+      {profile.assets?.length ? (
+        <ScrollView 
+          style={styles.assetsScrollView}
+          contentContainerStyle={styles.assetsScrollContent}
+          showsVerticalScrollIndicator={true}
+          bounces={true}
+        >
           <View style={styles.assetsSection}>
             {profile.assets.map((a) => (
               <AssetCard key={a.id} asset={a} />
             ))}
           </View>
-        ) : null}
-      </ScrollView>
+        </ScrollView>
+      ) : null}
 
       <View style={styles.footer}>
         <TouchableOpacity 
@@ -144,12 +148,26 @@ const styles = StyleSheet.create({
     elevation: 3,
     overflow: 'hidden',
   },
+  fixedSection: {
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 16,
+    backgroundColor: '#fff',
+  },
   screen: {
     flex: 1,
   },
   screenContent: {
     paddingHorizontal: 16,
     paddingTop: 24,
+    paddingBottom: 80,
+  },
+  assetsScrollView: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  assetsScrollContent: {
+    paddingHorizontal: 16,
     paddingBottom: 80,
   },
   avatarSection: {

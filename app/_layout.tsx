@@ -16,6 +16,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack initialRouteName="loading">
         <Stack.Screen name="loading" options={{ title: 'Loading', headerShown: false }} />
+        <Stack.Screen name="search" options={{ title: 'Search', headerShown: false }} />
         <Stack.Screen name="welcome" options={{ title: 'Welcome', headerShown: false }} />
         <Stack.Screen name="matched" options={{ title: 'Matched', headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

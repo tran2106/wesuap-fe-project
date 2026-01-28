@@ -70,11 +70,6 @@ export default function SearchPage() {
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.header}>
-				<Text style={styles.title}>Search Results</Text>
-				<Text style={styles.subtitle}>Found a potential match</Text>
-			</View>
-
 			<View style={styles.cardContainer}>
 				<ProfileCard profile={SEARCH_RESULT} />
 			</View>
@@ -88,24 +83,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: '#FAFAFA',
-	},
-	header: {
-		paddingTop: 24,
-		paddingBottom: 16,
-		paddingHorizontal: 20,
-		backgroundColor: '#fff',
-		borderBottomWidth: 1,
-		borderBottomColor: '#f0f0f0',
-	},
-	title: {
-		fontSize: 24,
-		fontWeight: '700',
-		color: '#1A1A1A',
-		marginBottom: 4,
-	},
-	subtitle: {
-		fontSize: 14,
-		color: '#666',
 	},
 	cardContainer: {
 		flex: 1,
